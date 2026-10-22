@@ -51,7 +51,7 @@ td.n{text-align:right;font-variant-numeric:tabular-nums}
 .note{font-size:12px;color:var(--mut);margin-top:14px}
 svg text{fill:var(--mut);font-size:10px;font-family:inherit}
 .hide{display:none}
-</style>
+dialog{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:12px;padding:18px}dialog::backdrop{background:rgba(0,0,0,.5)}</style>
 </head>
 <body>
 <div class="wrap">
@@ -59,8 +59,16 @@ svg text{fill:var(--mut);font-size:10px;font-family:inherit}
 <svg width="38" height="38" viewBox="0 0 40 40" role="img" aria-label="Logotipo CRECIVA"><rect width="40" height="40" rx="10" fill="#0F2B46"/><path d="M28 12.5A10.5 10.5 0 1 0 28 27.5" fill="none" stroke="#2BC4AE" stroke-width="4" stroke-linecap="round"/><polyline points="15,25 20,20 23,23 31,14" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/><polyline points="26,14 31,14 31,19" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <h1>CRECIVA<small>Crecimiento y control financiero</small></h1>
 <div class="sp"></div>
-<span class="d" id="ses">Modo local</span><button class="btn ghost sm" id="th">Tema</button>
+<span class="d" id="ses">Modo local</span><button class="btn ghost sm hide" id="so">Salir</button><button class="btn ghost sm" id="th">Tema</button>
 </header>
+<div id="nb" class="demo"><b>Tus datos están solo en este dispositivo.</b><span>Crea una cuenta gratis para no perderlos y verlos desde cualquier celular o computador.</span><div class="sp"></div><button class="btn sm" id="ao">Crear cuenta o entrar</button></div>
+<dialog id="au"><div style="min-width:min(88vw,340px)"><h2 style="margin-top:0">Tu cuenta CRECIVA</h2>
+<label for="ae">Correo</label><input id="ae" type="email" autocomplete="email">
+<label for="aw" style="margin-top:8px">Contraseña (mínimo 8 caracteres)</label><input id="aw" type="password" autocomplete="current-password">
+<label style="margin-top:10px;display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="ac" style="width:auto;margin-top:3px"><span>Autorizo de forma previa, expresa e informada el tratamiento de mis datos personales y financieros según la <a href="privacidad.html" target="_blank">Política de tratamiento de datos</a>, incluido su almacenamiento en servidores fuera de Colombia. (Solo para crear cuenta.)</span></label>
+<div class="dn" id="ax" role="alert"></div>
+<div class="row" style="margin-top:10px"><button class="btn" id="ai">Entrar</button><button class="btn ghost" id="ar">Crear cuenta</button></div>
+<button class="btn ghost sm" id="ax2">Cerrar</button></div></dialog>
 <div id="demo" class="demo hide"><b>Datos de demostración ficticios.</b><span>No corresponden a ningún negocio real.</span><div class="sp"></div><button class="btn ghost sm" id="clr">Borrar datos de demostración</button></div>
 <nav role="tablist"><button role="tab" data-t="p" aria-selected="true">Panel</button><button role="tab" data-t="m" aria-selected="false">Movimientos</button><button role="tab" data-t="n" aria-selected="false">Registrar</button><button role="tab" data-t="c" aria-selected="false">Cobros y pagos</button><button role="tab" data-t="g" aria-selected="false">Metas</button><button role="tab" data-t="r" aria-selected="false">Respaldo</button></nav>
 
@@ -111,7 +119,7 @@ svg text{fill:var(--mut);font-size:10px;font-family:inherit}
 <div class="card"><h2>Presupuesto mensual de gastos</h2><div class="row"><div><label for="pp">Monto en COP (0 para desactivar)</label><input type="number" id="pp" min="0" inputmode="numeric"></div><div><label>&nbsp;</label><button class="btn" id="ps">Guardar presupuesto</button></div></div></div>
 <div class="card"><h2>Copias de seguridad y exportación</h2><div class="row"><button class="btn" id="bj">Descargar copia (JSON)</button><button class="btn ghost" id="bc">Exportar movimientos (CSV)</button></div>
 <div class="row"><div><label for="rf">Restaurar desde un archivo de copia</label><input type="file" id="rf" accept=".json"></div><div><label>&nbsp;</label><button class="btn ghost" id="ra">Restaurar última copia automática</button></div></div>
-<div class="d">Se guarda una copia automática por día (las últimas 5) en este dispositivo. Con sesión activa, tus datos también se guardan en la nube y son privados.</div></div>
+<div class="d">Se guarda una copia automática por día (las últimas 5) en este dispositivo. Con sesión activa, tus datos también se guardan en la nube y son privados.</div><div class="row" style="margin-top:10px"><button class="btn ghost hide" id="ad">Eliminar mis datos de la nube</button></div></div>
 </section>
 <p class="note">Prototipo académico. Tus datos se guardan solo en este dispositivo. <a href="privacidad.html">Política de tratamiento de datos</a> · <a href="terminos.html">Términos de uso</a>. Las lecturas y consejos son orientativos: no garantizan ahorros ni resultados y no reemplazan a un contador. No incluye facturación electrónica, impuestos ni conexión bancaria.</p>
 </div>
@@ -145,7 +153,7 @@ var S=null;
 try{var raw=localStorage.getItem(K);if(raw)S=JSON.parse(raw)}catch(e){}
 if(!S||!S.movs)S={movs:demo()};S.cc=S.cc||[];S.ppto=S.ppto||0;S.metas=S.metas||[];
 var DB=null,UID=null,tmr=null;
-function save(){try{localStorage.setItem(K,JSON.stringify(S));var sn=JSON.parse(localStorage.getItem(K+"_bk")||"[]"),dy=new Date().toISOString().slice(0,10);if(!sn.length||sn[0].d!==dy){sn.unshift({d:dy,s:S});localStorage.setItem(K+"_bk",JSON.stringify(sn.slice(0,5)))}}catch(e){}
+function save(){cloud();try{localStorage.setItem(K,JSON.stringify(S));var sn=JSON.parse(localStorage.getItem(K+"_bk")||"[]"),dy=new Date().toISOString().slice(0,10);if(!sn.length||sn[0].d!==dy){sn.unshift({d:dy,s:S});localStorage.setItem(K+"_bk",JSON.stringify(sn.slice(0,5)))}}catch(e){}
 if(DB){clearTimeout(tmr);tmr=setTimeout(function(){DB.collection("data/users/"+UID).doc("estado").set({json:JSON.stringify(S)}).catch(function(){})},800)}}
 var editId=null;
 function opts(el,arr,all){el.innerHTML=(all?'<option value="">Todas</option>':"")+arr.map(function(x){return"<option>"+esc(x)+"</option>"}).join("")}
@@ -243,7 +251,35 @@ dl("creciva-movimientos.csv","\ufeff"+rows.join("\n"))};
 function load2(o){if(!o||!Array.isArray(o.movs))throw 0;o.cc=o.cc||[];o.ppto=o.ppto||0;o.metas=o.metas||[];S=o;save();$("#pp").value=S.ppto||"";all()}
 $("#rf").onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var o=JSON.parse(r.result);if(confirm("Esto reemplazará tus datos actuales con la copia. ¿Continuar?"))load2(o)}catch(e){alert("El archivo no es una copia válida de CRECIVA.")}};r.readAsText(f)};
 $("#ra").onclick=function(){try{var sn=JSON.parse(localStorage.getItem(K+"_bk")||"[]");if(!sn.length){alert("Aún no hay copias automáticas.");return}if(confirm("¿Restaurar la copia automática del "+sn[0].d+"?"))load2(sn[0].s)}catch(e){}};
-reset();all();
+var SB="https://guoafxxvuabhtwcsymwy.supabase.co",KEY="sb_publishable_BKyOy_ldMvSSCAL25p8xrQ_VYjOMZde",SK=K+"_ses",SES=null,ct=null;
+try{SES=JSON.parse(localStorage.getItem(SK)||"null")}catch(e){}
+function sset(m){$("#ses").textContent=m}
+function msg(m){if(/Invalid login/i.test(m))return"Correo o contraseña incorrectos.";if(/already registered/i.test(m))return"Ese correo ya tiene cuenta. Pulsa Entrar.";if(/Failed to fetch|NetworkError/i.test(m))return"No hay conexión. Inténtalo de nuevo.";return m}
+async function api(path,opt,t){opt=opt||{};opt.headers=Object.assign({apikey:KEY,"Content-Type":"application/json"},opt.headers||{});if(t)opt.headers.Authorization="Bearer "+t;var r=await fetch(SB+path,opt),x=await r.text(),j=null;try{j=x?JSON.parse(x):null}catch(e){}if(!r.ok)throw new Error((j&&(j.msg||j.error_description||j.message))||("Error "+r.status));return j}
+function setSes(j){SES={at:j.access_token,rt:j.refresh_token,exp:Math.floor(Date.now()/1000)+(j.expires_in||3600)-60,id:j.user.id,email:j.user.email};try{localStorage.setItem(SK,JSON.stringify(SES))}catch(e){}}
+async function tok(){if(!SES)return null;if(Date.now()/1000>SES.exp){var j=await api("/auth/v1/token?grant_type=refresh_token",{method:"POST",body:JSON.stringify({refresh_token:SES.rt})});setSes(j)}return SES.at}
+async function pull(){var t=await tok(),r=await api("/rest/v1/estados?select=datos&user_id=eq."+SES.id,{},t);return r&&r[0]?r[0].datos:null}
+async function push(){var t=await tok();await api("/rest/v1/estados?on_conflict=user_id",{method:"POST",headers:{Prefer:"resolution=merge-duplicates,return=minimal"},body:JSON.stringify({user_id:SES.id,datos:S,actualizado:new Date().toISOString()})},t)}
+function cloud(){if(!SES)return;clearTimeout(ct);sset("Guardando…");ct=setTimeout(function(){push().then(function(){sset("Cuenta: "+SES.email+" · guardado en la nube")}).catch(function(){sset("Sin conexión: se guardará al reconectar")})},800)}
+function ui(){var on=!!SES;$("#nb").classList.toggle("hide",on);$("#so").classList.toggle("hide",!on);$("#ad").classList.toggle("hide",!on);if(!on)sset("Modo local")}
+async function sync(){ui();sset("Sincronizando…");try{var r=await pull(),loc=S.movs.some(function(m){return!m.demo})||S.cc.length||S.metas.length;
+if(r&&Array.isArray(r.movs)&&!(loc&&confirm("Este dispositivo tiene datos propios. Aceptar: subirlos y reemplazar los de tu cuenta. Cancelar: usar los de tu cuenta."))){r.cc=r.cc||[];r.ppto=r.ppto||0;r.metas=r.metas||[];S=r;try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}$("#pp").value=S.ppto||"";all()}else await push();
+sset("Cuenta: "+SES.email+" · guardado en la nube")}catch(e){sset("Sin conexión con la nube")}}
+async function auth(kind){var e=$("#ae").value.trim(),p=$("#aw").value,x=$("#ax");x.textContent="";
+if(!e||p.length<8){x.textContent="Escribe tu correo y una contraseña de al menos 8 caracteres.";return}
+if(kind==="up"&&!$("#ac").checked){x.textContent="Para crear la cuenta debes aceptar el tratamiento de datos.";return}
+try{var j=await api(kind==="up"?"/auth/v1/signup":"/auth/v1/token?grant_type=password",{method:"POST",body:JSON.stringify({email:e,password:p})});
+if(!j||!j.access_token){x.textContent="Revisa tu correo para confirmar la cuenta y luego entra.";return}
+setSes(j);if(kind==="up")S.aut={f:new Date().toISOString(),v:"1.1"};$("#aw").value="";$("#au").close();await sync()}catch(err){x.textContent=msg(err.message)}}
+$("#ao").onclick=function(){$("#ax").textContent="";$("#au").showModal()};
+$("#ax2").onclick=function(){$("#au").close()};
+$("#ai").onclick=function(){auth("in")};$("#ar").onclick=function(){auth("up")};
+$("#so").onclick=async function(){try{await push()}catch(e){if(!confirm("No se pudo guardar en la nube. Si sales ahora podrías perder los últimos cambios. ¿Salir de todos modos?"))return}
+if(!confirm("Se cerrará tu sesión y se borrarán los datos de este dispositivo (siguen guardados en tu cuenta). ¿Continuar?"))return;SES=null;try{localStorage.removeItem(SK);localStorage.removeItem(K);localStorage.removeItem(K+"_bk")}catch(e){}location.reload()};
+$("#ad").onclick=async function(){if(!confirm("Se eliminarán todos tus datos de la nube. Los de este dispositivo se conservan. ¿Continuar?"))return;try{var t=await tok();await api("/rest/v1/estados?user_id=eq."+SES.id,{method:"DELETE"},t);SES=null;try{localStorage.removeItem(SK)}catch(e){}ui();alert("Tus datos fueron eliminados de la nube. Para borrar también tu cuenta, escribe al correo de contacto de la política de datos.")}catch(e){alert("No se pudo eliminar. Inténtalo de nuevo.")}};
+window.addEventListener("online",cloud);
+reset();all();ui();
+if(SES)tok().then(sync).catch(function(e){if(e instanceof TypeError){sset("Sin conexión: usando datos de este dispositivo")}else{SES=null;try{localStorage.removeItem(SK)}catch(x){}ui();sset("Sesión vencida: entra de nuevo")}});
 try{if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js")}catch(e){}
 (async function(){try{var u=await claude.use("user"),d=await claude.use("db");if(!u||!d)return;var id=await u.id();if(!id)return;
 var ref=d.collection("data/users/"+id).doc("estado"),sn=await ref.get();
